@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>抓包工具</title>
+    <link href="/2026/01/08/%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7/"/>
+    <url>/2026/01/08/%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7/</url>
+    
+    <content type="html"><![CDATA[<span id="more"></span><h1 id="抓包工具"><a href="#抓包工具" class="headerlink" title="抓包工具"></a>抓包工具</h1><p><strong>Charles Vs BurpSuite</strong></p><h2 id="Charles"><a href="#Charles" class="headerlink" title="Charles"></a>Charles</h2><p>不用在浏览器里边设置代理，可以直接使用</p><p>所有代理与 HTTPS 捕获操作均通过 Charles 完成配置</p><h3 id="前提步骤：安装证书"><a href="#前提步骤：安装证书" class="headerlink" title="前提步骤：安装证书"></a>前提步骤：安装证书</h3><ol><li>打开 Charles，进入菜单栏：<br><code>Help</code> → <code>SSL Proxying</code> → <code>Install Charles Root Certificate</code></li><li>系统会打开证书安装窗口，将证书安装到<strong>“受信任的根证书颁发机构”</strong>存储中（Windows）或钥匙串中设置为“始终信任”（macOS）。</li></ol><h3 id="开启-SSL-代理"><a href="#开启-SSL-代理" class="headerlink" title="开启 SSL 代理"></a>开启 SSL 代理</h3><ol><li><p>进入代理设置：<br><code>Proxy</code> → <code>SSL Proxying Settings</code></p></li><li><p>在 <code>SSL Proxying</code> 标签页中：</p><ul><li>✅ 勾选 <code>Enable SSL Proxying</code></li></ul></li><li><p>在 <code>Proxy</code> 菜单中确保也勾选：  </p><ul><li><p>✅ <code>Windows Proxy</code>（Windows 系统代理，方便浏览器直接走 Charles）</p><p>  可尝试在 <code>SSL Proxying Settings</code> 的 <code>Locations</code> 中添加对应域名与端口（如 <code>*:*</code> 表示捕获所有 HTTPS 流量）。</p><p>  c</p></li></ul></li></ol><p>使用 BurpSuite 需要在浏览器中<strong>手动设置代理</strong>，且每次使用前需<strong>开启电脑设置里边的代理</strong>。</p><p>部分应用（如微信小程序）可能需要额外配置或配合其他工具。</p><h3 id="提前步骤：下载并导入证书（中文版）"><a href="#提前步骤：下载并导入证书（中文版）" class="headerlink" title="提前步骤：下载并导入证书（中文版）"></a>提前步骤：下载并导入证书（中文版）</h3><p><strong>1.1从 BurpSuite 导出证书</strong></p><ol><li>打开 BurpSuite，进入：<br><code>代理</code> → <code>代理设置</code> → <code>导入/导出 CA 证书</code></li><li>选勾选<strong>“DER 格式证书”</strong>，保存为 <code>burp.der</code>（也可选择 PEM 格式，某些场景兼容性更好）。</li></ol><p><strong>1.2 浏览器导入证书</strong></p><ul><li><strong>Edge</strong>：<ol><li>浏览器设置 → <code>证书</code> → <code>管理证书</code> → <code>管理从Windows导入的证书</code> → <code>导入</code></li><li>选择 <code>受信任的根证书颁发机构</code> → <code>导入</code></li><li>选择之前导出的 <code>burp.der</code>，（导入时选择“所有文件”)</li><li>同样的步骤，选择 <code>中间证书颁发机构</code>再操作一遍</li></ol></li></ul><blockquote><p>注：建议将证书同时导入系统证书存储（Windows 证书管理器或 macOS 钥匙串），以便部分客户端应用也能信任 Burp 的 CA。</p></blockquote><h3 id="步骤-2：浏览器代理设置"><a href="#步骤-2：浏览器代理设置" class="headerlink" title="步骤 2：浏览器代理设置"></a>步骤 2：浏览器代理设置</h3><p><strong>2.1 手动配置浏览器代理</strong></p><ol><li><p>打开浏览器设置</p></li><li><p>浏览器设置 → <code>代理</code> → <code>打开代理设置</code> → <code>手动设置代理</code></p></li><li><p>跳转到电脑的设置页面里：</p><ul><li><p>地址：填写本机 IP（可通过 <code>ipconfig</code> &#x2F; <code>ifconfig</code> 查看，通常为 <code>192.168.x.x</code> 或 <code>127.0.0.1</code>）</p></li><li><p>端口：Burp 默认监听 <code>8080</code></p></li><li><p>下面那个通常不填，否则有些场景下无法使用</p><p>  <img src="/images/3b52c29544896ca77d0e95e6e5279466.png" alt="3b52c29544896ca77d0e95e6e5279466"></p></li></ul></li></ol><h3 id="特殊场景：抓取微信小程序包"><a href="#特殊场景：抓取微信小程序包" class="headerlink" title="特殊场景：抓取微信小程序包"></a>特殊场景：抓取微信小程序包</h3><h4 id="1-可以直接在微信中设置代理（类似于在浏览器里设置代理）"><a href="#1-可以直接在微信中设置代理（类似于在浏览器里设置代理）" class="headerlink" title="1 .可以直接在微信中设置代理（类似于在浏览器里设置代理）"></a>1 .可以直接在微信中设置代理（类似于在浏览器里设置代理）</h4><p><strong>但是！！！</strong></p><ul><li>部分小程序会检测代理并拒绝连接</li><li>微信内置浏览器可能忽略系统代理</li><li>而且可能会导致微信部分功能不能使用</li></ul><h4 id="2-解决方案：Charles-BurpSuite-协同抓包"><a href="#2-解决方案：Charles-BurpSuite-协同抓包" class="headerlink" title="2. 解决方案：Charles + BurpSuite 协同抓包"></a>2. 解决方案：Charles + BurpSuite 协同抓包</h4><ol><li><p><strong>Charles 转代理</strong>：</p><ul><li><p>打开 Charles：<code>Proxy</code> → <code>External Proxy Settings</code></p></li><li><p>勾选 <code>Use external proxy servers</code></p></li><li><p>将 HTTP 与 HTTPS 代理指向本地的地址 <code>127.0.0.1:8080</code>（即 BurpSuite 监听地址）</p><ul><li><p>BurpSuite 监听地址</p><p>  打开BurpSuite：<code>代理</code> → <code>代理设置</code>→ <code>代理监听器</code></p></li></ul></li></ul></li><li><p><strong>流量走向</strong>： </p><p>小程序 → Charles（端口 8888） → BurpSuite（端口 8080） → 目标服务器</p></li></ol><h4 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h4><ul><li><p>Burp 中的 <code>Intercept</code> 开关用于控制是否拦截请求，不影响代理运行</p></li><li><p>可以过滤无关流量</p><ul><li><p>在 Burp Proxy → Options 中的 <code>Proxy Listeners</code> 可设置绑定特定 IP</p></li><li><p>在 <code>Scope</code> 标签中可定义目标范围，避免捕获过多无关请求</p></li></ul><p>  <strong>使用建议</strong>：开始抓包前，先关闭浏览器不必要的插件，并清除缓存，避免干扰。抓取移动端流量时，建议先在同一 Wi-Fi 下测试连通性。</p></li></ul><h2 id="Proxifier-转代理及抓包相关笔记"><a href="#Proxifier-转代理及抓包相关笔记" class="headerlink" title="Proxifier 转代理及抓包相关笔记"></a>Proxifier 转代理及抓包相关笔记</h2><h3 id="一、监听小程序工具协同使用"><a href="#一、监听小程序工具协同使用" class="headerlink" title="一、监听小程序工具协同使用"></a>一、监听小程序工具协同使用</h3><ol><li><strong>仅用Charles</strong>：电脑代理关闭时，可直接用Charles监听小程序流量。</li><li><strong>BurpSuite+Charles</strong>：使用BurpSuite（BP）需打开电脑代理，再通过Charles转发流量。</li><li><strong>Proxifier+其他工具</strong>：用Proxifier转代理时，电脑代理可关闭，无需手动开启。</li></ol><h3 id="二、Proxifier-配置步骤"><a href="#二、Proxifier-配置步骤" class="headerlink" title="二、Proxifier 配置步骤"></a>二、Proxifier 配置步骤</h3><ol><li><strong>添加代理服务器</strong><br>操作路径：<code>Profile</code> → <code>Proxy servers</code>，添加地址 <code>127.0.0.1</code>，端口 <code>8080</code>（对应HTTPS协议）。</li><li><strong>设置代理规则</strong><br>操作路径：<code>Profile</code> → <code>Proxification Rules</code>，针对进程名（如 <code>weixin*.exe</code>）配置规则，指定使用上述 <code>127.0.0.1:8080</code> 的HTTPS代理。</li><li><strong>进程名获取方式</strong><ul><li>从任务管理器中查找目标程序进程名；</li><li>或通过预览功能快速定位。</li></ul></li></ol><h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><h3 id="一、抓包限制与适用场景"><a href="#一、抓包限制与适用场景" class="headerlink" title="一、抓包限制与适用场景"></a>一、抓包限制与适用场景</h3><ol><li><strong>协议限制</strong>：仅能抓取 <code>HTTP/HTTPS</code> 协议的流量，其他协议无法捕获。</li><li><strong>适用对象</strong>：可抓取浏览器、APP、小程序、PC应用&#x2F;客户端的流量。</li></ol><h3 id="二、抓包的核心用途"><a href="#二、抓包的核心用途" class="headerlink" title="二、抓包的核心用途"></a>二、抓包的核心用途</h3><ol><li>定位包含关键信息的数据包，用于安全测试；</li><li>分析数据包中的参数，检测信息泄露等安全问题；</li><li>挖掘数据包中的业务逻辑参数，辅助理解系统交互机制。</li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>抓包</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>原创</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>测试文章</title>
     <link href="/2025/12/18/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/"/>
     <url>/2025/12/18/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</url>
